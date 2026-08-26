@@ -214,6 +214,9 @@ import Project from '../components/Project.astro';
   }
 
   nav {
+    /* referencia de posicionamiento del panel de [Contacto], que en mobile se
+       abre a lo ancho del nav en vez de colgar del trigger. */
+    position: relative;
     display: flex;
     flex-wrap: wrap;
     gap: 4px 14px;
@@ -279,4 +282,11 @@ import Project from '../components/Project.astro';
     color: var(--muted-chrome);
   }
 
+  /* Con 14px de gap los cuatro links no entran en una línea en pantallas
+     angostas: a 360px falta apenas 2px. */
+  @media (max-width: 640px) {
+    nav {
+      gap: 4px 10px;
+    }
+  }
 </style>

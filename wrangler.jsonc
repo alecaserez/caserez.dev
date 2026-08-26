@@ -1,7 +1,7 @@
 {
   // El sitio sigue siendo estático: Astro pre-renderiza todo a `dist/` y
   // Cloudflare lo sirve como assets. El Worker sólo atiende lo que no matchea
-  // un archivo, o sea POST /api/contacto.
+  // un archivo, o sea POST /api/contact.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "caserez-dev",
   "main": "worker/index.ts",

@@ -3,7 +3,7 @@
  *
  * El sitio sigue siendo estático: Cloudflare sirve `dist/` como assets y sólo
  * las requests que no matchean un archivo llegan acá. En la práctica eso es
- * únicamente POST /api/contacto.
+ * únicamente POST /api/contact.
  */
 
 interface EmailBinding {
@@ -26,7 +26,7 @@ interface Env {
   TURNSTILE_SECRET_KEY?: string;
 }
 
-const ENDPOINT = '/api/contacto';
+const ENDPOINT = '/api/contact';
 const MAX_EMAIL = 254;
 const MAX_MENSAJE = 5000;
 

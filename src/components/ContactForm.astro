@@ -1,7 +1,7 @@
 ---
 /* [Contacto] con formulario: la persona deja su mail y un mensaje.
    Usa <details> para abrir sin JS, y el <form> postea nativo contra
-   /api/contacto si el script no corrió. Con JS el envío es en la misma
+   /api/contact si el script no corrió. Con JS el envío es en la misma
    página, sin recargar. */
 interface Props {
   email: string;
@@ -25,7 +25,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? TURNSTILE_
   </summary>
 
   <div class="panel">
-    <form method="post" action="/api/contacto">
+    <form method="post" action="/api/contact">
       <label class="field">
         <span class="field-label">Tu email</span>
         <input
@@ -251,24 +251,22 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? TURNSTILE_
     color: var(--fg-list);
   }
 
-  /* Mobile: un panel flotante de 340px anclado al trigger se sale de pantalla.
-     Se abre en el flujo, ocupando el ancho completo. */
+  /* Mobile: un panel de 340px colgado del trigger se sale de pantalla. En vez
+     de eso se ancla al nav y ocupa toda la columna, así [Contacto] queda en la
+     misma línea que el resto de los links. */
   @media (max-width: 640px) {
     .contact {
-      display: block;
-      width: 100%;
+      position: static;
     }
 
     .panel {
-      position: static;
-      /* se estira hasta el margen de la columna de texto, para que el widget
-         de Turnstile (300px mínimo) entre sin desbordar */
-      width: calc(100% + 24px);
+      /* `left`/`right` son relativos al nav, que es el ancestro posicionado */
+      top: calc(100% + 10px);
+      left: 0;
+      right: 0;
+      width: auto;
       max-width: none;
-      margin-top: 10px;
-      margin-left: -24px;
       padding: 12px;
-      box-shadow: none;
     }
 
     /* iOS hace zoom al enfocar inputs de menos de 16px */
