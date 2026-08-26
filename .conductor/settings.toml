@@ -9,7 +9,8 @@ url = "http://localhost:$CONDUCTOR_PORT"
 # Sitio estático de Astro: sin base de datos, sin Docker y con un puerto
 # por workspace, así que varios pueden correr en paralelo.
 run_mode = "concurrent"
-auto_run_after_setup = true
+# El dev server lo arranca el usuario a mano desde el panel de terminal.
+auto_run_after_setup = false
 
 setup = """
 set -eu
