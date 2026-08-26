@@ -1,0 +1,46 @@
+---
+/* Sección de proyecto: encabezado `### Nombre` + contenido. */
+interface Props {
+  id: string;
+  title: string;
+  spaced?: boolean;
+}
+
+const { id, title, spaced = false } = Astro.props;
+---
+
+<article id={id} class:list={['project', { spaced }]}>
+  <h3>
+    <span class="marker">###</span>
+    <span>{title}</span>
+  </h3>
+  <slot />
+</article>
+
+<style>
+  .project {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    scroll-margin-top: 32px;
+  }
+
+  .spaced {
+    padding-top: 28px;
+  }
+
+  h3 {
+    margin: 0;
+    display: flex;
+    gap: 12px;
+    font-size: 16.5px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--fg-h3);
+  }
+
+  .marker {
+    font-weight: 400;
+    color: var(--syntax);
+  }
+</style>

@@ -1,0 +1,70 @@
+/* Tokens del diseño (claude.ai/design → caserez.dev - Home) */
+:root {
+  color-scheme: dark;
+
+  --bg: #0d0e10;
+
+  /* escala de texto, de más claro a más apagado */
+  --fg-hi: oklch(0.99 0.005 250); /* hover de links */
+  --fg-h1: oklch(0.97 0.005 250);
+  --fg-h3: oklch(0.96 0.005 250);
+  --fg-h2: oklch(0.95 0.005 250);
+  --fg-strong: oklch(0.92 0.005 250);
+  --fg-lede: oklch(0.9 0.008 250);
+  --fg: oklch(0.84 0.01 250);
+  --fg-body: oklch(0.81 0.01 250);
+  --fg-list: oklch(0.73 0.01 250);
+  --fg-meta: oklch(0.7 0.01 250);
+
+  --muted: oklch(0.6 0.01 250);
+  --muted-soft: oklch(0.58 0.01 250);
+  --muted-key: oklch(0.55 0.01 250);
+  --muted-chrome: oklch(0.52 0.01 250);
+
+  /* sintaxis markdown: #, ##, ###, guiones, corchetes */
+  --syntax: oklch(0.45 0.005 250);
+  --bracket: oklch(0.45 0.01 250);
+
+  --rule-hr: oklch(0.42 0.005 250);
+  --rule-quote: oklch(0.34 0.005 250);
+  --rule: oklch(0.26 0.005 250);
+
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--fg-lede);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule-hr);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+a:hover {
+  color: var(--fg-hi);
+  border-bottom-color: var(--fg-hi);
+}
+
+a:focus-visible {
+  outline: 1px solid var(--fg-hi);
+  outline-offset: 3px;
+  border-bottom-color: transparent;
+}
+
+::selection {
+  background: oklch(0.75 0.01 250 / 0.28);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a {
+    transition: none;
+  }
+}

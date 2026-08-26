@@ -1,0 +1,22 @@
+---
+/* Link entre corchetes apagados: [texto] */
+interface Props {
+  href: string;
+}
+
+const { href } = Astro.props;
+---
+
+<span class="wrap"
+  ><span class="bracket">[</span><a href={href}><slot /></a><span class="bracket">]</span></span
+>
+
+<style>
+  .wrap {
+    color: var(--bracket);
+  }
+
+  .bracket {
+    color: var(--bracket);
+  }
+</style>
