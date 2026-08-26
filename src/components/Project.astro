@@ -1,18 +1,20 @@
 ---
-/* Sección de proyecto: encabezado `### Nombre` + contenido. */
+/* Sección de proyecto: encabezado `### Nombre` + contenido.
+   Con `href` el título linkea al proyecto. */
 interface Props {
   id: string;
   title: string;
+  href?: string;
   spaced?: boolean;
 }
 
-const { id, title, spaced = false } = Astro.props;
+const { id, title, href, spaced = false } = Astro.props;
 ---
 
 <article id={id} class:list={['project', { spaced }]}>
   <h3>
     <span class="marker">###</span>
-    <span>{title}</span>
+    {href ? <a href={href}>{title}</a> : <span>{title}</span>}
   </h3>
   <slot />
 </article>
@@ -37,6 +39,17 @@ const { id, title, spaced = false } = Astro.props;
     font-weight: 500;
     letter-spacing: -0.02em;
     color: var(--fg-h3);
+  }
+
+  /* el título linkeado mantiene el tono del h3, no el de un link suelto */
+  h3 a {
+    color: inherit;
+    border-bottom-color: var(--rule-hr);
+  }
+
+  h3 a:hover {
+    color: var(--fg-hi);
+    border-bottom-color: var(--fg-hi);
   }
 
   .marker {
