@@ -1,0 +1,44 @@
+"$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
+
+# Botón "Open" del panel de terminal → el dev server de este workspace.
+[[preview_urls]]
+name = "caserez.dev"
+url = "http://localhost:$CONDUCTOR_PORT"
+
+[scripts]
+# Sitio estático de Astro: sin base de datos, sin Docker y con un puerto
+# por workspace, así que varios pueden correr en paralelo.
+run_mode = "concurrent"
+auto_run_after_setup = true
+
+setup = """
+set -eu
+
+if [ -f package-lock.json ]; then
+  npm ci
+else
+  npm install
+fi
+
+# Genera .astro/types.d.ts para que el editor y `astro check` funcionen
+# apenas se abre el workspace.
+npx astro sync
+"""
+
+[scripts.run.dev]
+# Astro dev con HMR, en el puerto asignado al workspace.
+command = "npm run dev -- --port \"$CONDUCTOR_PORT\""
+available_in = [ "local" ]
+default = true
+icon = "play"
+
+[scripts.run.preview]
+# Build de producción servido como lo serviría Cloudflare Pages.
+command = "npm run build && npm run preview -- --port \"$CONDUCTOR_PORT\""
+available_in = [ "local" ]
+icon = "eye"
+
+[scripts.run.check]
+# astro check: diagnósticos de TypeScript y de los .astro.
+command = "npm run check"
+icon = "circle-check"

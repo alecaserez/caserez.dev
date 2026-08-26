@@ -1,0 +1,20 @@
+---
+/* Ítem de lista al estilo markdown: guion en una columna fija de 24px. */
+---
+
+<li class="bullet">
+  <span class="marker">-</span>
+  <span><slot /></span>
+</li>
+
+<style>
+  .bullet {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    color: inherit;
+  }
+
+  .marker {
+    color: var(--syntax);
+  }
+</style>
