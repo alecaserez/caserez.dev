@@ -4,15 +4,10 @@ import BracketLink from '../components/BracketLink.astro';
 import Bullet from '../components/Bullet.astro';
 import Project from '../components/Project.astro';
 
-// Interruptores del diseño original (`showFrontMatter` / `showToc`), apagados por defecto.
-const showFrontMatter = false;
-const showToc = false;
-
 const title = 'Alejandro Caserez — caserez.dev';
-const description = 'Trabajo con audiencias: medirlas, hacerlas participar, cobrarles.';
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title}>
   <div class="page">
     <div class="doc">
       <div class="chrome">
@@ -23,52 +18,18 @@ const description = 'Trabajo con audiencias: medirlas, hacerlas participar, cobr
         <span>caserez.dev</span>
       </div>
 
-      {
-        showFrontMatter && (
-          <div class="frontmatter">
-            <span class="fence">---</span>
-            <div class="fields">
-              <span class="key">nombre:</span>
-              <span class="value">Alejandro Caserez</span>
-              <span class="key">sitio:</span>
-              <span class="value">caserez.dev</span>
-              <span class="key">mail:</span>
-              <span class="value">hola@caserez.dev</span>
-            </div>
-            <span class="fence">---</span>
-          </div>
-        )
-      }
-
       <header>
         <h1><span class="marker">#</span><span>Alejandro Caserez</span></h1>
-        <p class="lede">Trabajo con audiencias: medirlas, hacerlas participar, cobrarles.</p>
         <nav>
-          <BracketLink href="#">X</BracketLink>
-          <BracketLink href="#">GitHub</BracketLink>
+          <BracketLink href="https://x.com/alecaserez">X</BracketLink>
+          <BracketLink href="https://github.com/alecaserez">GitHub</BracketLink>
           <BracketLink href="https://www.linkedin.com/in/caserezalejandro/">LinkedIn</BracketLink>
-          <BracketLink href="mailto:hola@caserez.dev">hola@caserez.dev</BracketLink>
+          <BracketLink href="mailto:hola@caserez.dev">Mail</BracketLink>
         </nav>
       </header>
 
       <section>
         <h2><span class="marker">##</span><span>Qué hice</span></h2>
-
-        {
-          showToc && (
-            <ul class="toc">
-              <Bullet>
-                <BracketLink href="#zonacitas">Zonacitas</BracketLink> app de citas, 4M de usuarios
-              </Bullet>
-              <Bullet>
-                <BracketLink href="#get">GET</BracketLink> juego en vivo, Teatro Astros
-              </Bullet>
-              <Bullet>
-                <BracketLink href="#custoo">Custoo</BracketLink> analytics de streaming, adquirida
-              </Bullet>
-            </ul>
-          )
-        }
 
         <Project id="zonacitas" title="Zonacitas">
           <p class="body">
@@ -77,64 +38,26 @@ const description = 'Trabajo con audiencias: medirlas, hacerlas participar, cobr
           </p>
           <ul class="points">
             <Bullet>
-              Suscripciones integradas directo contra Google Play, App Store y Stripe, sin
-              intermediarios. Google Play no factura en pesos en Argentina, así que el cobro hubo que
-              resolverlo a mano en cada plataforma.
+              Suscripciones integradas directo contra Google Play, App Store y Mercadopago, sin
+              intermediarios.
             </Bullet>
-            <Bullet>App de iOS escrita desde cero en SwiftUI, arquitectura MVVM.</Bullet>
-            <Bullet>Sistema de matching implementado en funciones almacenadas de MariaDB.</Bullet>
+            <Bullet>App de iOS escrita desde cero en SwiftUI.</Bullet>
+            <Bullet>Sistema de matching implementado.</Bullet>
             <Bullet>
-              Identidad unificada entre web, Android e iOS con una propiedad de usuario propia, para
-              poder medir a la misma persona sin importar por dónde entre.
+              Identidad unificada entre web, Android e iOS.
             </Bullet>
           </ul>
-        </Project>
-
-        <Project id="get" title="GET" spaced>
-          <p class="body">
-            GET es el unipersonal interactivo de Pedro Rosemblat, estrenado en el Teatro Astros. El
-            público juega desde el celular durante la función y al final se reparte un millón de
-            pesos según cómo jugó cada uno. Hice el juego.
-          </p>
-          <p class="quote">
-            Tres funciones de estreno. De 1.521 espectadores se anotaron 1.448 —el 95% de la sala— y
-            1.274 jugaron las cuatro rondas completas. 5.481 respuestas en 12 rondas.
-          </p>
-          <ul class="points">
-            <Bullet>
-              Pico de 203 altas en cinco minutos, con la sala entrando antes de que arranque la
-              función.
-            </Bullet>
-            <Bullet>Cero mensajes fallidos y cero bajas en las tres funciones.</Bullet>
-            <Bullet>
-              Costo de mensajería cero: todo resuelto dentro de la ventana de 24 horas por opt-in.
-            </Bullet>
-            <Bullet>
-              Los tiempos de respuesta bajaron solos ronda a ronda, de 21,6 a 13,6 segundos. Nadie
-              explicó nada: el público le agarró la mano al formato.
-            </Bullet>
-            <Bullet>
-              164 personas escribieron después del show sin que se les pidiera, la mayoría saliendo
-              del teatro.
-            </Bullet>
-          </ul>
-          <p class="points-note">
-            Sigue en gira: Astengo en Rosario (1.097 butacas) y Podestá en noviembre (1.070). El
-            fan-out de ~14 segundos es lo próximo a resolver.
-          </p>
         </Project>
 
         <Project id="custoo" title="Custoo" spaced>
           <p class="body">
             Plataforma de analytics de audiencia para streaming. Medía YouTube, Twitch y Kick, y
-            publicaba esos datos dentro de los medios que la usaban. Empezó como un generador de
-            imágenes de rankings para Twitter.
+            publicaba esos datos dentro de los medios que la usaban.
           </p>
           <p class="quote">Adquirida por Thebrains y la UTN. Hoy opera como Cognitia.</p>
           <ul class="points">
             <Bullet>
-              Arquitectura multi-tenant: cada cliente con su configuración propia, sin forks del
-              código.
+              Medición de audiencia en tiempo real y datos totales cada 1 hora.
             </Bullet>
             <Bullet>
               Embeds con autenticación por hash y permisos de dominio por token, para que cada medio
@@ -147,14 +70,25 @@ const description = 'Trabajo con audiencias: medirlas, hacerlas participar, cobr
           </ul>
         </Project>
 
+        <Project id="get" title="GET el juego interactivo" spaced>
+          <p class="body">
+            GET es el unipersonal interactivo de Pedro Rosemblat, estrenado en el Teatro Astros. El
+            público juega desde el celular durante la función y al final se reparte un premio.
+          </p>
+          <p class="quote">
+            Tres funciones de estreno. De 1.521 espectadores se anotaron 1.448 —el 95% de la sala— y
+            1.274 jugaron las cuatro rondas completas. 5.481 respuestas en 12 rondas.
+          </p>
+          <ul class="points">
+            <Bullet>Cero mensajes fallidos y cero bajas en las tres funciones.</Bullet>
+            <Bullet>
+              Costo de mensajería cero: todo resuelto dentro de la ventana de 24 horas por opt-in.
+            </Bullet>
+          </ul>
+        </Project>
+
         <p class="more">Entre otros proyectos.</p>
       </section>
-
-      <footer>
-        <h2><span class="marker">##</span><span>Escribime</span></h2>
-        <p class="mail"><a href="mailto:hola@caserez.dev">hola@caserez.dev</a></p>
-        <p class="signoff">Contesto yo.</p>
-      </footer>
     </div>
   </div>
 </BaseLayout>
@@ -345,26 +279,4 @@ const description = 'Trabajo con audiencias: medirlas, hacerlas participar, cobr
     color: var(--muted-chrome);
   }
 
-  footer {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding-top: 28px;
-    border-top: 1px solid var(--rule);
-  }
-
-  .mail {
-    margin: 0;
-    padding-left: 24px;
-    font-size: 18px;
-    font-weight: 500;
-    letter-spacing: -0.02em;
-  }
-
-  .signoff {
-    margin: 0;
-    padding-left: 24px;
-    font-size: 13.5px;
-    color: var(--muted-soft);
-  }
 </style>
