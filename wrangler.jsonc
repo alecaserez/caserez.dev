@@ -20,7 +20,7 @@
   // que reenvía— y este repo es público. Va como secret del Worker, que además
   // sobrevive a los deploys; las vars en texto plano las pisa cada deploy.
   "vars": {
-    "CONTACT_FROM": "formulario@caserez.dev"
+    "CONTACT_FROM": "contact@caserez.dev"
   },
   // Guarda los console.error del Worker para poder verlos en el dashboard
   // (Workers → caserez-dev → Logs) en vez de depender de un tail en vivo.

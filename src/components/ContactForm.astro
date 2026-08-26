@@ -60,7 +60,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? TURNSTILE_
       }
 
       <div class="actions">
-        <p class="status" role="status" aria-live="polite"></p>
         <button type="submit">
           <span class="bracket">[</span><span class="submit-label">Enviar</span><span
             class="bracket">]</span
@@ -68,6 +67,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? TURNSTILE_
         </button>
       </div>
     </form>
+
+    <p class="status" role="status" aria-live="polite"></p>
 
     <p class="fallback">
       O escribime a <a href={`mailto:${email}`}>{email}</a>
@@ -170,16 +171,13 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? TURNSTILE_
     border-color: oklch(0.55 0.12 25);
   }
 
+  /* Sin anillo de foco: el borde más claro alcanza como indicador y no
+     compite con el autocompletado del navegador ni con los gestores de
+     contraseñas, que dibujan lo suyo encima. */
   input:focus,
   textarea:focus {
     outline: none;
-    border-color: var(--muted);
-  }
-
-  input:focus-visible,
-  textarea:focus-visible {
-    outline: 1px solid var(--fg-hi);
-    outline-offset: 1px;
+    border-color: var(--fg-list);
   }
 
   /* fuera de la vista pero no `display: none`, para que los bots la completen */
@@ -193,8 +191,9 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? TURNSTILE_
 
   .actions {
     display: flex;
-    align-items: baseline;
-    gap: 12px;
+    justify-content: flex-end;
+    /* aire extra: pegado al widget de Turnstile queda apretado */
+    margin-top: 6px;
   }
 
   button {
@@ -227,17 +226,32 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? TURNSTILE_
   }
 
   .status {
-    margin: 0;
-    flex: 1;
+    margin: 10px 0 0;
     color: var(--muted);
+  }
+
+  /* vacío no ocupa lugar, así no deja un hueco antes del pie */
+  .status:empty {
+    display: none;
+  }
+
+  .status.error {
+    color: oklch(0.72 0.14 25);
   }
 
   .status.ok {
     color: var(--fg-hi);
   }
 
-  .status.error {
-    color: oklch(0.72 0.14 25);
+  /* Enviado: los campos se ocultan y queda sólo la confirmación, centrada. */
+  .panel.sent form {
+    display: none;
+  }
+
+  .panel.sent .status {
+    margin: 0;
+    padding: 6px 0 2px;
+    text-align: center;
   }
 
   .fallback {
@@ -301,12 +315,13 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? TURNSTILE_
   const panels = document.querySelectorAll<HTMLDetailsElement>('.contact');
 
   panels.forEach((details) => {
+    const panel = details.querySelector<HTMLElement>('.panel');
     const form = details.querySelector('form');
     const button = details.querySelector<HTMLButtonElement>('button[type="submit"]');
     const status = details.querySelector<HTMLElement>('.status');
     const email = details.querySelector<HTMLInputElement>('input[name="email"]');
     const mensaje = details.querySelector<HTMLTextAreaElement>('textarea[name="mensaje"]');
-    if (!form || !button || !status || !email || !mensaje) return;
+    if (!panel || !form || !button || !status || !email || !mensaje) return;
 
     // Con JS validamos nosotros, para mostrar el error dentro del panel en vez
     // del globo del navegador. Sin JS queda la validación nativa del form.
@@ -315,6 +330,14 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? TURNSTILE_
     const setStatus = (message: string, kind: '' | 'ok' | 'error') => {
       status.textContent = message;
       status.className = kind ? `status ${kind}` : 'status';
+    };
+
+    /* Vuelve a mostrar el formulario. Turnstile se resetea acá y no antes,
+       porque mientras el form está oculto el widget no puede re-renderizar. */
+    const restaurar = () => {
+      panel.classList.remove('sent');
+      setStatus('', '');
+      window.turnstile?.reset();
     };
 
     const rechazar = (campo: HTMLInputElement | HTMLTextAreaElement, message: string) => {
@@ -359,10 +382,11 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? TURNSTILE_
 
         if (response.ok && data.ok) {
           form.reset();
+          panel.classList.add('sent');
           setStatus(data.message ?? 'Gracias, te leo pronto.', 'ok');
           window.setTimeout(() => {
             details.open = false;
-            setStatus('', '');
+            restaurar();
           }, 2600);
         } else {
           setStatus(data.message ?? 'No se pudo enviar. Probá de nuevo.', 'error');
@@ -372,8 +396,14 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? TURNSTILE_
       } finally {
         button.disabled = false;
         // Turnstile quema el token en cada envío: hay que pedir uno nuevo.
-        window.turnstile?.reset();
+        // Si quedó en estado enviado, el reset corre al restaurar.
+        if (!panel.classList.contains('sent')) window.turnstile?.reset();
       }
+    });
+
+    // Si se cierra a mano en pleno "enviado", queda listo para la próxima.
+    details.addEventListener('toggle', () => {
+      if (!details.open && panel.classList.contains('sent')) restaurar();
     });
   });
 
