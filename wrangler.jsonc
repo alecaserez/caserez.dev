@@ -1,0 +1,13 @@
+{
+  // Sitio 100% estático: no hay Worker script, sólo el `dist/` que genera Astro.
+  // Cloudflare lo despliega con `npx wrangler versions upload`.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "caserez-dev",
+  "compatibility_date": "2026-08-26",
+  "assets": {
+    "directory": "./dist",
+    // Astro usa `trailingSlash: 'never'` y `build.format: 'file'`, así que
+    // /pagina se sirve desde pagina.html y /pagina/ redirige a /pagina.
+    "html_handling": "drop-trailing-slash"
+  }
+}

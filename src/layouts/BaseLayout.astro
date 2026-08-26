@@ -2,11 +2,15 @@
 import '../styles/global.css';
 
 interface Props {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
 }
 
-const { title, description } = Astro.props;
+// Valores por defecto del sitio: las páginas sólo los pasan si quieren otra cosa.
+const {
+  title = 'Alejandro Caserez — caserez.dev',
+  description = 'Trabajo con audiencias: medirlas, hacerlas participar, cobrarles.',
+} = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://caserez.dev');
 ---
 
