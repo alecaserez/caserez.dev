@@ -15,8 +15,14 @@
   // Enviar a una dirección verificada de la propia cuenta es gratis en todos
   // los planes y no consume la cuota mensual de Email Service.
   "send_email": [{ "name": "EMAIL" }],
+  // CONTACT_TO no está acá a propósito: tiene que ser una dirección de destino
+  // verificada en Email Routing —una casilla real, no una dirección @caserez.dev
+  // que reenvía— y este repo es público. Va como secret del Worker, que además
+  // sobrevive a los deploys; las vars en texto plano las pisa cada deploy.
   "vars": {
-    "CONTACT_TO": "hola@caserez.dev",
     "CONTACT_FROM": "formulario@caserez.dev"
-  }
+  },
+  // Guarda los console.error del Worker para poder verlos en el dashboard
+  // (Workers → caserez-dev → Logs) en vez de depender de un tail en vivo.
+  "observability": { "enabled": true }
 }
