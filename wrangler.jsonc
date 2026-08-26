@@ -1,13 +1,22 @@
 {
-  // Sitio 100% estático: no hay Worker script, sólo el `dist/` que genera Astro.
-  // Cloudflare lo despliega con `npx wrangler versions upload`.
+  // El sitio sigue siendo estático: Astro pre-renderiza todo a `dist/` y
+  // Cloudflare lo sirve como assets. El Worker sólo atiende lo que no matchea
+  // un archivo, o sea POST /api/contacto.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "caserez-dev",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-08-26",
   "assets": {
     "directory": "./dist",
     // Astro usa `trailingSlash: 'never'` y `build.format: 'file'`, así que
     // /pagina se sirve desde pagina.html y /pagina/ redirige a /pagina.
     "html_handling": "drop-trailing-slash"
+  },
+  // Enviar a una dirección verificada de la propia cuenta es gratis en todos
+  // los planes y no consume la cuota mensual de Email Service.
+  "send_email": [{ "name": "EMAIL" }],
+  "vars": {
+    "CONTACT_TO": "hola@caserez.dev",
+    "CONTACT_FROM": "formulario@caserez.dev"
   }
 }

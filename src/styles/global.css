@@ -25,6 +25,10 @@
   --syntax: oklch(0.45 0.005 250);
   --bracket: oklch(0.45 0.01 250);
 
+  /* superficies elevadas sobre el fondo: menús, popovers */
+  --surface: oklch(0.21 0.006 250);
+  --surface-hover: oklch(0.26 0.006 250);
+
   --rule-hr: oklch(0.42 0.005 250);
   --rule-quote: oklch(0.34 0.005 250);
   --rule: oklch(0.26 0.005 250);

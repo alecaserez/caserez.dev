@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BracketLink from '../components/BracketLink.astro';
 import Bullet from '../components/Bullet.astro';
+import ContactForm from '../components/ContactForm.astro';
 import Project from '../components/Project.astro';
 ---
 
@@ -22,14 +23,14 @@ import Project from '../components/Project.astro';
           <BracketLink href="https://x.com/alecaserez">X</BracketLink>
           <BracketLink href="https://github.com/alecaserez">GitHub</BracketLink>
           <BracketLink href="https://www.linkedin.com/in/caserezalejandro/">LinkedIn</BracketLink>
-          <BracketLink href="mailto:hola@caserez.dev">Mail</BracketLink>
+          <ContactForm email="hola@caserez.dev" />
         </nav>
       </header>
 
       <section>
         <h2><span class="marker">##</span><span>Qué hice</span></h2>
 
-        <Project id="zonacitas" title="Zonacitas">
+        <Project id="zonacitas" title="Zonacitas" href="https://registro.zonacitas.com/">
           <p class="body">
             App de citas argentina, con más de 4 millones de usuarios registrados. Android e iOS
             nativos, backend propio y cobros directos contra las tres plataformas.
@@ -47,7 +48,7 @@ import Project from '../components/Project.astro';
           </ul>
         </Project>
 
-        <Project id="custoo" title="Custoo" spaced>
+        <Project id="custoo" title="Custoo" href="https://cognitia.lat" spaced>
           <p class="body">
             Plataforma de analytics de audiencia para streaming. Medía YouTube, Twitch y Kick, y
             publicaba esos datos dentro de los medios que la usaban.
@@ -68,7 +69,8 @@ import Project from '../components/Project.astro';
           </ul>
         </Project>
 
-        <Project id="get" title="GET el juego interactivo" spaced>
+        <Project id="get" title="GET el juego interactivo"
+          href="https://www.instagram.com/p/DcC-QEultcr/?img_index=8" spaced>
           <p class="body">
             GET es el unipersonal interactivo de Pedro Rosemblat, estrenado en el Teatro Astros. El
             público juega desde el celular durante la función y al final se reparte un premio.

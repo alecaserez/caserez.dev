@@ -1,0 +1,396 @@
+---
+/* [Contacto] con formulario: la persona deja su mail y un mensaje.
+   Usa <details> para abrir sin JS, y el <form> postea nativo contra
+   /api/contacto si el script no corrió. Con JS el envío es en la misma
+   página, sin recargar. */
+interface Props {
+  email: string;
+  label?: string;
+}
+
+const { email, label = 'Contacto' } = Astro.props;
+
+/* La site key de Turnstile es pública: viaja en el HTML, así que va versionada
+   y el deploy no depende de configurar una variable de build. La privada es
+   TURNSTILE_SECRET_KEY, que vive como secret del Worker. */
+const TURNSTILE_SITE_KEY = '0x4AAAAAAEdMq538YhFabioB';
+
+// Se puede pisar por entorno para probar con las claves de test de Cloudflare.
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? TURNSTILE_SITE_KEY;
+---
+
+<details class="contact">
+  <summary>
+    <span class="bracket">[</span><span class="label">{label}</span><span class="bracket">]</span>
+  </summary>
+
+  <div class="panel">
+    <form method="post" action="/api/contacto">
+      <label class="field">
+        <span class="field-label">Tu email</span>
+        <input
+          type="email"
+          name="email"
+          required
+          maxlength="254"
+          autocomplete="email"
+          spellcheck="false"
+          placeholder="vos@ejemplo.com"
+        />
+      </label>
+
+      <label class="field">
+        <span class="field-label">Mensaje</span>
+        <textarea name="mensaje" required rows="4" maxlength="5000" placeholder="Contame."
+        ></textarea>
+      </label>
+
+      {/* Campo trampa para bots: no se ve ni se tabula. */}
+      <div class="honeypot" aria-hidden="true">
+        <label>
+          No completes esto
+          <input type="text" name="website" tabindex="-1" autocomplete="off" />
+        </label>
+      </div>
+
+      {
+        turnstileSiteKey && (
+          <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="dark" />
+        )
+      }
+
+      <div class="actions">
+        <p class="status" role="status" aria-live="polite"></p>
+        <button type="submit">
+          <span class="bracket">[</span><span class="submit-label">Enviar</span><span
+            class="bracket">]</span
+          >
+        </button>
+      </div>
+    </form>
+
+    <p class="fallback">
+      O escribime a <a href={`mailto:${email}`}>{email}</a>
+    </p>
+  </div>
+</details>
+
+{turnstileSiteKey && <script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js" />}
+
+<style>
+  .contact {
+    position: relative;
+    display: inline-block;
+    color: var(--bracket);
+  }
+
+  summary {
+    cursor: pointer;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary:focus-visible {
+    outline: 1px solid var(--fg-hi);
+    outline-offset: 3px;
+  }
+
+  /* mismo aspecto que un BracketLink: [texto] subrayado apagado */
+  .label {
+    color: var(--fg-lede);
+    border-bottom: 1px solid var(--rule-hr);
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  summary:hover .label,
+  .contact[open] .label {
+    color: var(--fg-hi);
+    border-bottom-color: var(--fg-hi);
+  }
+
+  summary:focus-visible .label {
+    border-bottom-color: transparent;
+  }
+
+  .panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    z-index: 10;
+    box-sizing: border-box;
+    width: 340px;
+    max-width: calc(100vw - 48px);
+    padding: 14px;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: var(--surface);
+    box-shadow: 0 12px 28px oklch(0 0 0 / 0.45);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .field-label {
+    color: var(--muted-chrome);
+  }
+
+  input,
+  textarea {
+    padding: 7px 9px;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--fg-body);
+    font: inherit;
+    resize: vertical;
+    transition: border-color 0.15s;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--syntax);
+  }
+
+  input[aria-invalid='true'],
+  textarea[aria-invalid='true'] {
+    border-color: oklch(0.55 0.12 25);
+  }
+
+  input:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--muted);
+  }
+
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: 1px solid var(--fg-hi);
+    outline-offset: 1px;
+  }
+
+  /* fuera de la vista pero no `display: none`, para que los bots la completen */
+  .honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .actions {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--bracket);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .submit-label {
+    color: var(--fg-lede);
+    border-bottom: 1px solid var(--rule-hr);
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  button:hover .submit-label {
+    color: var(--fg-hi);
+    border-bottom-color: var(--fg-hi);
+  }
+
+  button:disabled {
+    cursor: default;
+  }
+
+  button:disabled .submit-label {
+    color: var(--muted-key);
+    border-bottom-color: transparent;
+  }
+
+  .status {
+    margin: 0;
+    flex: 1;
+    color: var(--muted);
+  }
+
+  .status.ok {
+    color: var(--fg-hi);
+  }
+
+  .status.error {
+    color: oklch(0.72 0.14 25);
+  }
+
+  .fallback {
+    margin: 12px 0 0;
+    padding-top: 10px;
+    border-top: 1px solid var(--rule);
+    color: var(--muted-chrome);
+  }
+
+  .fallback a {
+    color: var(--fg-list);
+  }
+
+  /* Mobile: un panel flotante de 340px anclado al trigger se sale de pantalla.
+     Se abre en el flujo, ocupando el ancho completo. */
+  @media (max-width: 640px) {
+    .contact {
+      display: block;
+      width: 100%;
+    }
+
+    .panel {
+      position: static;
+      /* se estira hasta el margen de la columna de texto, para que el widget
+         de Turnstile (300px mínimo) entre sin desbordar */
+      width: calc(100% + 24px);
+      max-width: none;
+      margin-top: 10px;
+      margin-left: -24px;
+      padding: 12px;
+      box-shadow: none;
+    }
+
+    /* iOS hace zoom al enfocar inputs de menos de 16px */
+    input,
+    textarea {
+      font-size: 16px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .label,
+    .submit-label,
+    input,
+    textarea {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  interface ContactResponse {
+    ok?: boolean;
+    message?: string;
+  }
+
+  /* Mismo criterio que el Worker: algo, arroba, algo, punto, algo.
+     Validar mail a fondo con regex da falsos negativos; esto descarta lo
+     evidente y el resto lo dice el mail que rebota. */
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const MAX_EMAIL = 254;
+
+  const panels = document.querySelectorAll<HTMLDetailsElement>('.contact');
+
+  panels.forEach((details) => {
+    const form = details.querySelector('form');
+    const button = details.querySelector<HTMLButtonElement>('button[type="submit"]');
+    const status = details.querySelector<HTMLElement>('.status');
+    const email = details.querySelector<HTMLInputElement>('input[name="email"]');
+    const mensaje = details.querySelector<HTMLTextAreaElement>('textarea[name="mensaje"]');
+    if (!form || !button || !status || !email || !mensaje) return;
+
+    // Con JS validamos nosotros, para mostrar el error dentro del panel en vez
+    // del globo del navegador. Sin JS queda la validación nativa del form.
+    form.noValidate = true;
+
+    const setStatus = (message: string, kind: '' | 'ok' | 'error') => {
+      status.textContent = message;
+      status.className = kind ? `status ${kind}` : 'status';
+    };
+
+    const rechazar = (campo: HTMLInputElement | HTMLTextAreaElement, message: string) => {
+      campo.setAttribute('aria-invalid', 'true');
+      setStatus(message, 'error');
+      campo.focus();
+    };
+
+    // Al corregir se limpia el error, para no dejarlo colgado mientras escribe.
+    [email, mensaje].forEach((campo) => {
+      campo.addEventListener('input', () => {
+        campo.removeAttribute('aria-invalid');
+        if (status.classList.contains('error')) setStatus('', '');
+      });
+    });
+
+    form.addEventListener('submit', async (event) => {
+      // Sin JS esto no corre y el form hace un submit nativo contra la misma URL.
+      event.preventDefault();
+
+      email.removeAttribute('aria-invalid');
+      mensaje.removeAttribute('aria-invalid');
+
+      const direccion = email.value.trim();
+      if (!direccion) return rechazar(email, 'Dejame tu email para poder contestarte.');
+      if (direccion.length > MAX_EMAIL || !EMAIL_RE.test(direccion)) {
+        return rechazar(email, 'Revisá el email: no parece válido.');
+      }
+      if (!mensaje.value.trim()) return rechazar(mensaje, 'Escribí un mensaje antes de enviar.');
+
+      button.disabled = true;
+      setStatus('Enviando…', '');
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          headers: { accept: 'application/json' },
+          body: new FormData(form),
+        });
+
+        const data = (await response.json().catch(() => ({}))) as ContactResponse;
+
+        if (response.ok && data.ok) {
+          form.reset();
+          setStatus(data.message ?? 'Gracias, te leo pronto.', 'ok');
+          window.setTimeout(() => {
+            details.open = false;
+            setStatus('', '');
+          }, 2600);
+        } else {
+          setStatus(data.message ?? 'No se pudo enviar. Probá de nuevo.', 'error');
+        }
+      } catch {
+        setStatus('No se pudo enviar. Revisá la conexión y probá de nuevo.', 'error');
+      } finally {
+        button.disabled = false;
+        // Turnstile quema el token en cada envío: hay que pedir uno nuevo.
+        window.turnstile?.reset();
+      }
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    panels.forEach((details) => {
+      if (details.open && !details.contains(event.target as Node)) details.open = false;
+    });
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    panels.forEach((details) => {
+      if (!details.open) return;
+      details.open = false;
+      details.querySelector<HTMLElement>('summary')?.focus();
+    });
+  });
+</script>
