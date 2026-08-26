@@ -19,8 +19,10 @@ interface EmailBinding {
 
 interface Env {
   EMAIL: EmailBinding;
-  /* Destinatario y remitente, definidos como `vars` en wrangler.jsonc. */
-  CONTACT_TO: string;
+  /* Destino verificado en Email Routing. Va como secret, no como var, porque
+     es una casilla personal y el repo es público. */
+  CONTACT_TO?: string;
+  /* Remitente, definido como `var` en wrangler.jsonc. */
   CONTACT_FROM: string;
   /* Secret del Worker: `wrangler secret put TURNSTILE_SECRET_KEY`. */
   TURNSTILE_SECRET_KEY?: string;
@@ -74,8 +76,9 @@ export default {
       /* Falla cerrado: la site key ya viaja en el HTML, así que si falta el
          secret es una config rota, no un sitio sin captcha. Mejor rechazar
          visiblemente que aceptar spam en silencio. */
-      if (!env.TURNSTILE_SECRET_KEY) {
-        console.error('Falta TURNSTILE_SECRET_KEY: el formulario rechaza todo hasta configurarlo.');
+      if (!env.TURNSTILE_SECRET_KEY || !env.CONTACT_TO) {
+        const falta = !env.TURNSTILE_SECRET_KEY ? 'TURNSTILE_SECRET_KEY' : 'CONTACT_TO';
+        console.error(`Falta ${falta}: el formulario rechaza todo hasta configurarlo.`);
         return respond(wantsJson, 503, 'El formulario está fuera de servicio. Escribime por mail.');
       }
 
@@ -84,17 +87,33 @@ export default {
         return respond(wantsJson, 403, 'No pudimos verificar que no seas un bot. Probá de nuevo.');
       }
 
-      await env.EMAIL.send({
-        to: env.CONTACT_TO,
-        from: env.CONTACT_FROM,
-        replyTo: email, // responder desde el cliente de mail le llega a la persona
-        subject: `Contacto desde caserez.dev — ${email}`,
-        text: `${mensaje}\n\n—\nDe: ${email}\nEnviado desde el formulario de caserez.dev`,
-      });
+      try {
+        await env.EMAIL.send({
+          to: env.CONTACT_TO,
+          from: env.CONTACT_FROM,
+          replyTo: email, // responder desde el cliente de mail le llega a la persona
+          subject: `Contacto desde caserez.dev — ${email}`,
+          text: `${mensaje}\n\n—\nDe: ${email}\nEnviado desde el formulario de caserez.dev`,
+        });
+      } catch (error) {
+        /* Casi siempre es config de Email Service, no un bug: dominio sin
+           onboardear (E_SENDER_NOT_VERIFIED) o destino sin verificar
+           (E_RECIPIENT_NOT_ALLOWED). El from/to van al log para poder
+           compararlos con lo que está dado de alta en el dashboard. */
+        console.error(
+          `Email Service rechazó el envío de ${env.CONTACT_FROM} a ${env.CONTACT_TO}:`,
+          error instanceof Error ? `${error.name}: ${error.message}` : String(error)
+        );
+        return respond(
+          wantsJson,
+          502,
+          'No se pudo enviar el mensaje. Probá de nuevo o escribime directo por mail.'
+        );
+      }
 
       return respond(wantsJson, 200, 'Gracias, te leo pronto.');
     } catch (error) {
-      console.error('Falló el envío del formulario de contacto:', error);
+      console.error('Falló el formulario de contacto antes de enviar:', error);
       return respond(
         wantsJson,
         502,
